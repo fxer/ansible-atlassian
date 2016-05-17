@@ -1,0 +1,40 @@
+---
+- name: Install Bamboo remote agent
+  copy:
+    src: "{{ atlassian_agent_current_jar }}"
+    dest: "{{ atlassian_agent_install_dir }}/{{ atlassian_agent_current_jar }}"
+    owner: "{{ atlassian_agent_user }}"
+    group: "{{ atlassian_agent_group }}"
+    mode: 0600
+  register: agent_download
+  notify:
+    - restart bamboo-agent
+
+- name: Symlink Bamboo agent jar
+  file:
+    src: "{{ atlassian_agent_install_dir }}/{{ atlassian_agent_current_jar }}"
+    dest: "{{ atlassian_agent_install_dir }}/bamboo-agent.jar"
+    state: link
+  when: agent_download.changed
+
+- name: Configure remote agent
+  template:
+    src: bamboo-agent-wrapper.conf.j2
+    dest: "{{ atlassian_agent_home_dir }}/conf/wrapper.conf"
+    owner: "{{ atlassian_agent_user }}"
+    group: "{{ atlassian_agent_group }}"
+    mode: 0644
+    backup: yes
+  notify:
+    - restart bamboo-agent
+
+- name: Configure systemd
+  template:
+    src: bamboo-agent.service.j2
+    dest: "{{ atlassian_systemd_dir }}/bamboo-agent.service"
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - reload systemd
+    - restart bamboo-agent

@@ -1,0 +1,10 @@
+---
+
+- name: restart bamboo
+  service: name=bamboo state=restarted enabled=yes
+
+- name: restart bamboo-agent
+  service: name=bamboo-agent state=restarted enabled=yes
+
+- name: restart jira
+  service: name=jira state=restarted

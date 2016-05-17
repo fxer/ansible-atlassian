@@ -1,0 +1,81 @@
+---
+
+- name: Check Bamboo server version
+  stat: path="{{ atlassian_bamboo_install_dir }}/{{ atlassian_bamboo_extracted_dir_name }}"
+  register: is_bamboo_latest
+  changed_when: is_bamboo_latest.stat.exists == False
+
+- name: Download Bamboo server
+  get_url:
+    url: "{{ atlassian_bamboo_download_url }}/{{ atlassian_bamboo_download_filename }}"
+    dest: "{{ atlassian_tmp_dir }}"
+    mode: 0644
+  register: bamboo_downloaded
+  when: is_bamboo_latest.stat.exists == False
+
+- name: Extract Bamboo server
+  unarchive:
+    src: "{{ atlassian_tmp_dir }}/{{ atlassian_bamboo_download_filename }}"
+    dest: "{{ atlassian_bamboo_install_dir }}"
+    owner: "{{ atlassian_bamboo_user }}"
+    group: "{{ atlassian_bamboo_user }}"
+    copy: no
+  when: not bamboo_downloaded|skipped
+
+- name: Symlink Bamboo
+  file:
+    src: "{{ atlassian_bamboo_install_dir }}/{{ atlassian_bamboo_extracted_dir_name }}"
+    dest: "{{ atlassian_bamboo_install_dir }}/bamboo"
+    state: link
+  when: not bamboo_downloaded|skipped
+  notify:
+    - restart bamboo
+
+- name: Install database driver
+  copy:
+    src: "{{ atlassian_bamboo_database_driver }}"
+    dest: "{{ atlassian_bamboo_install_dir }}/bamboo/atlassian-bamboo/WEB-INF/lib"
+    owner: "{{ atlassian_bamboo_user }}"
+    group: "{{ atlassian_bamboo_user }}"
+    mode: 0644
+  when: atlassian_bamboo_database_driver
+  notify:
+    - restart bamboo
+
+# Hopefully we can delete bamboo-init.properties and use the regex below in setenv.sh eventually, but bamboo has a bug
+# https://jira.atlassian.com/browse/BAM-14836
+- name: Config - server.xml
+  template:
+    src: bamboo-server.xml.j2
+    dest: "{{ atlassian_bamboo_install_dir }}/bamboo/conf/server.xml"
+    owner: "{{ atlassian_bamboo_user }}"
+    group: "{{ atlassian_bamboo_user }}"
+    mode: 0644
+    backup: yes
+  notify:
+    - restart bamboo
+
+- name: Config - bamboo-init.properties
+  template:
+    src: bamboo-init.properties.j2
+    dest: "{{ atlassian_bamboo_install_dir }}/bamboo/atlassian-bamboo/WEB-INF/classes/bamboo-init.properties"
+    owner: "{{ atlassian_bamboo_user }}"
+    group: "{{ atlassian_bamboo_user }}"
+    mode: 0644
+    backup: yes
+  notify:
+    - restart bamboo
+
+- name: Config - setenv.sh
+  lineinfile:
+    dest: "{{ atlassian_bamboo_install_dir }}/bamboo/bin/setenv.sh"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+    backup: yes
+  with_items:
+#    - { regexp: '^#?BAMBOO_HOME=', line: "BAMBOO_HOME=\"{{ atlassian_bamboo_home_dir }}\"" }
+    - { regexp: '^#?JVM_MINIMUM_MEMORY=', line: "JVM_MINIMUM_MEMORY=\"{{ atlassian_bamboo_jvm_minimum_memory }}\"" }
+    - { regexp: '^#?JVM_MAXIMUM_MEMORY=', line: "JVM_MAXIMUM_MEMORY=\"{{ atlassian_bamboo_jvm_maximum_memory }}\"" }
+  notify:
+    - restart bamboo

@@ -1,0 +1,13 @@
+[Unit]
+Description=Bamboo Remote Agent
+After=network.target mysqld.service
+
+[Service]
+Restart=always
+Type=simple
+User={{ atlassian_agent_user }}
+
+ExecStart=/bin/java -jar {{ atlassian_agent_install_dir }}/bamboo-agent.jar {{ atlassian_agent_server }}
+
+[Install]
+WantedBy=multi-user.target

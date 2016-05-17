@@ -1,0 +1,13 @@
+---
+
+- include: jira-server.yml
+  when: atlassian_manage_jira_server
+  tags: ['atlassian', 'jira-server']
+
+- include: bamboo-server.yml
+  when: atlassian_manage_bamboo_server
+  tags: ['atlassian', 'bamboo-server']
+
+- include: bamboo-remote-agent.yml
+  when: atlassian_manage_bamboo_agent
+  tags: ['atlassian', 'bamboo-agent']

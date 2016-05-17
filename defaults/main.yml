@@ -1,0 +1,82 @@
+# Set these to True in group/host vars as necessary per server
+atlassian_manage_jira_server: False
+atlassian_manage_bamboo_server: False
+atlassian_manage_bamboo_agent: False
+atlassian_tmp_dir: '/tmp'
+atlassian_systemd_dir: '/etc/systemd/system'
+
+atlassian_jira_current_version: '7.1.6'
+atlassian_jira_download_url: 'https://www.atlassian.com/software/jira/downloads/binary/'
+atlassian_jira_download_filename: "atlassian-jira-core-{{ atlassian_jira_current_version }}-x64.bin"
+atlassian_jira_user: 'jira'
+atlassian_jira_jvm_minimum_memory: '1024m'
+atlassian_jira_jvm_maximum_memory: '1024m'
+atlassian_jira_install_dir: '/opt/atlassian/jira'
+atlassian_jira_home_dir: '/var/atlassian/application-data/jira'
+
+# Connectors for server.xml if JIRA is available at multiple locations or requires
+# additional config settings
+atlassian_jira_tomcat_connectors: |
+  <Connector
+  	port="8080"
+
+  	protocol="HTTP/1.1"
+  	maxThreads="150"
+  	minSpareThreads="25"
+  	connectionTimeout="20000"
+
+  	enableLookups="false"
+  	maxHttpHeaderSize="8192"
+  	useBodyEncodingForURI="true"
+  	redirectPort="8443"
+  	acceptCount="100"
+  	disableUploadTimeout="true"
+  />
+
+
+atlassian_bamboo_current_version: '5.11.3'
+atlassian_bamboo_download_url: 'https://www.atlassian.com/software/bamboo/downloads/binary'
+atlassian_bamboo_download_filename: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}.tar.gz"
+atlassian_bamboo_extracted_dir_name: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}"
+atlassian_bamboo_user: 'bamboo'
+atlassian_bamboo_jvm_minimum_memory: '1024m'
+atlassian_bamboo_jvm_maximum_memory: '1024m'
+atlassian_bamboo_install_dir: '/opt/atlassian'
+atlassian_bamboo_home_dir: '/var/atlassian/application-data/bamboo'
+
+# Database connector filename. If required it should exist in role files/ dir
+# Set to False to disable db driver install
+# Latest MySQL java driver: https://dev.mysql.com/downloads/connector/j/
+atlassian_bamboo_database_driver: 'mysql-connector-java-5.1.39-bin.jar'
+
+# Connectors for server.xml if Bamboo is available at multiple locations or requires
+# additional config settings
+atlassian_bamboo_tomcat_connectors: |
+  <Connector
+    port="8085"
+    redirectPort="8443"
+
+    protocol="HTTP/1.1"
+    useBodyEncodingForURI="true"
+    URIEncoding="UTF-8"
+
+    maxThreads="150"
+    minSpareThreads="25"
+    connectionTimeout="20000"
+    disableUploadTimeout="true"
+    acceptCount="100"
+    enableLookups="false"
+    maxHttpHeaderSize="8192"
+  />
+
+
+# Bamboo Remote Agent, download from your Bamboo install and copy to this role files/ dir
+# http://mybamboo.example.com/admin/agent/addRemoteAgent.action
+atlassian_agent_current_jar: 'atlassian-bamboo-agent-installer-5.11.3.jar'
+atlassian_agent_install_dir: '/opt/bamboo-agent'
+atlassian_agent_home_dir: '/home/bamboo/bamboo-agent-home'
+atlassian_agent_user: 'bamboo'
+atlassian_agent_group: 'bamboo'
+
+# Required: The Bamboo Server install remote agents phone home to
+# atlassian_agent_server: 'https://mybamboo.example.com/agentServer/'

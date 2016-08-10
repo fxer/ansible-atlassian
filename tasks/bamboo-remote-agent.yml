@@ -15,7 +15,7 @@
     src: "{{ atlassian_agent_install_dir }}/{{ atlassian_agent_current_jar }}"
     dest: "{{ atlassian_agent_install_dir }}/bamboo-agent.jar"
     state: link
-  when: agent_download.changed
+  when: agent_download.changed and not ansible_check_mode
 
 - name: Configure remote agent
   template:

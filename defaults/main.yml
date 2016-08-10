@@ -5,7 +5,7 @@ atlassian_manage_bamboo_agent: False
 atlassian_tmp_dir: '/tmp'
 atlassian_systemd_dir: '/etc/systemd/system'
 
-atlassian_jira_current_version: '7.1.6'
+atlassian_jira_current_version: '7.1.9'
 atlassian_jira_download_url: 'https://www.atlassian.com/software/jira/downloads/binary/'
 atlassian_jira_download_filename: "atlassian-jira-core-{{ atlassian_jira_current_version }}-x64.bin"
 atlassian_jira_user: 'jira'
@@ -33,15 +33,23 @@ atlassian_jira_tomcat_connectors: |
   	disableUploadTimeout="true"
   />
 
+activator_current_version: '1.3.10'
+activator_install_dir: '/opt'
+activator_download_url: "https://downloads.typesafe.com/typesafe-activator/{{ activator_current_version }}"
+activator_download_filename: "typesafe-activator-{{ activator_current_version }}-minimal.zip"
+activator_extracted_directory_name: "activator-{{ activator_current_version }}-minimal"
 
-atlassian_bamboo_current_version: '5.11.3'
+atlassian_bamboo_current_version: '5.12.3.1'
 atlassian_bamboo_download_url: 'https://www.atlassian.com/software/bamboo/downloads/binary'
 atlassian_bamboo_download_filename: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}.tar.gz"
 atlassian_bamboo_extracted_dir_name: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}"
-atlassian_bamboo_user: 'bamboo'
+atlassian_bamboo_user: 'bambooserver'
+atlassian_bamboo_firewall_ports: ['8085', '54663'] # Ports bamboo/remote agents need open
+atlassian_bamboo_required_packages: ['git', 'npm', 'nodejs']
+atlassian_bamboo_npm_required_packages: ['gulp-cli']
 atlassian_bamboo_jvm_minimum_memory: '1024m'
 atlassian_bamboo_jvm_maximum_memory: '1024m'
-atlassian_bamboo_install_dir: '/opt/atlassian'
+atlassian_bamboo_install_dir: '/opt'
 atlassian_bamboo_home_dir: '/var/atlassian/application-data/bamboo'
 
 # Database connector filename. If required it should exist in role files/ dir
@@ -72,7 +80,7 @@ atlassian_bamboo_tomcat_connectors: |
 
 # Bamboo Remote Agent, download from your Bamboo install and copy to this role files/ dir
 # http://mybamboo.example.com/admin/agent/addRemoteAgent.action
-atlassian_agent_current_jar: 'atlassian-bamboo-agent-installer-5.11.3.jar'
+atlassian_agent_current_jar: 'atlassian-bamboo-agent-installer-{{ atlassian_bamboo_current_version }}.jar'
 atlassian_agent_install_dir: '/opt/bamboo-agent'
 atlassian_agent_home_dir: '/home/bamboo/bamboo-agent-home'
 atlassian_agent_user: 'bamboo'

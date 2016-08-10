@@ -8,6 +8,10 @@
   when: atlassian_manage_bamboo_server
   tags: ['atlassian', 'bamboo-server']
 
+- include: activator.yml
+  when: atlassian_manage_bamboo_server
+  tags: ['atlassian', 'bamboo-server', 'activator']
+
 - include: bamboo-remote-agent.yml
   when: atlassian_manage_bamboo_agent
   tags: ['atlassian', 'bamboo-agent']

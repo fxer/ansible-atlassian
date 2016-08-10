@@ -1,4 +1,47 @@
 ---
+- name: Create Bamboo server user
+  user:
+    name: "{{ atlassian_bamboo_user }}"
+    shell: '/sbin/nologin'
+    append: yes
+    comment: "Bamboo server user"
+    state: present
+
+- name: Enable passwordless sudo for bamboo server user
+  lineinfile:
+    dest: "/etc/sudoers.d/{{ atlassian_bamboo_user }}"
+    line: "{{ item }}"
+    state: present
+    create: yes
+    validate: 'visudo -cf %s'
+  with_items:
+    - "Defaults:{{ atlassian_bamboo_user }} !requiretty"
+    - "%{{ atlassian_bamboo_user }} ALL=NOPASSWD: /bin/systemctl"
+
+- name: Install Bamboo server requirements
+  package:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items: "{{ atlassian_bamboo_required_packages }}"
+
+# TODO: Update to state: latest when Ansible bug is fixed
+# TODO: Maybe move this to the Appserver role, for compile requirements?
+# https://github.com/ansible/ansible-modules-extras/issues/1375
+- name: Install Bamboo server npm requirements
+  npm:
+    name: "{{ item }}"
+    global: yes
+    state: present
+  with_items: "{{ atlassian_bamboo_npm_required_packages }}"
+
+- name: Configure firewalld ports
+  firewalld:
+    port: "{{ item }}/tcp"
+    permanent: true
+    immediate: true
+    state: enabled
+  with_items: "{{ atlassian_bamboo_firewall_ports }}"
 
 - name: Check Bamboo server version
   stat: path="{{ atlassian_bamboo_install_dir }}/{{ atlassian_bamboo_extracted_dir_name }}"
@@ -79,3 +122,18 @@
     - { regexp: '^#?JVM_MAXIMUM_MEMORY=', line: "JVM_MAXIMUM_MEMORY=\"{{ atlassian_bamboo_jvm_maximum_memory }}\"" }
   notify:
     - restart bamboo
+
+- name: Install systemd service
+  template:
+    src: bamboo-server.service.j2
+    dest: "/etc/systemd/system/bamboo.service"
+    owner: root
+    group: root
+    mode: 0644
+  register: systemd_output
+  notify:
+    - restart bamboo
+
+- name: Reload systemd units
+  command: systemctl daemon-reload
+  when: systemd_output.changed

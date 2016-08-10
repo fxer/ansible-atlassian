@@ -1,0 +1,32 @@
+---
+- name: Check Activator version
+  stat: path="{{ activator_install_dir }}/{{ activator_extracted_directory_name }}"
+  register: is_activator_latest
+  changed_when: is_activator_latest.stat.exists == False
+
+- name: Download Activator
+  get_url:
+    url="{{ activator_download_url }}/{{ activator_download_filename }}"
+    dest="{{ tmp_dir }}"
+    mode=0644
+  register: activator_downloaded
+  when: is_activator_latest.stat.exists == False
+
+- name: Extract Activator
+  unarchive:
+    src="{{ tmp_dir }}/{{ activator_download_filename }}"
+    dest="{{ activator_install_dir }}"
+    owner=root
+    group=root
+    mode=0777
+    copy=no
+  when: not activator_downloaded|skipped
+  become: yes
+
+- name: symlink Activator
+  file:
+    src="{{ activator_install_dir }}/{{ activator_extracted_directory_name }}"
+    dest="{{ activator_install_dir }}/activator"
+    state=link
+  become: yes
+  when: not activator_downloaded|skipped

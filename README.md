@@ -1,7 +1,7 @@
 ## Ansible Role: Atlassian
 Configure Atlassian software on RedHat/CentOS 7 servers
 
-## Jira Server
+## JIRA Server
 The JIRA binary installer requires input, so we can download it but you'll have to SSH in and run the installation manually. However JIRA Software & Service Desk are 1-click no-downtime upgrades inside the JIRA interface since v7.0, so we only need to manually update JIRA Core.
 
 * Download any version of JIRA Core installer by setting `atlassian_jira_current_version` variable (latest version number found [here](https://www.atlassian.com/software/jira/core/update))

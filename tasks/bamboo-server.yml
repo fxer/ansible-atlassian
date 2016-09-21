@@ -1,11 +1,4 @@
 ---
-- name: Create Bamboo server user
-  user:
-    name: "{{ atlassian_bamboo_user }}"
-    shell: '/sbin/nologin'
-    append: yes
-    comment: "Bamboo server user"
-    state: present
 
 - name: Enable passwordless sudo for bamboo server user
   lineinfile:

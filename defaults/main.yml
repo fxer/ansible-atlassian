@@ -5,7 +5,7 @@ atlassian_manage_bamboo_agent: False
 atlassian_tmp_dir: '/tmp'
 atlassian_systemd_dir: '/etc/systemd/system'
 
-atlassian_jira_current_version: '7.1.9'
+atlassian_jira_current_version: '7.2.1'
 atlassian_jira_download_url: 'https://www.atlassian.com/software/jira/downloads/binary/'
 atlassian_jira_download_filename: "atlassian-jira-core-{{ atlassian_jira_current_version }}-x64.bin"
 atlassian_jira_user: 'jira'
@@ -39,7 +39,7 @@ activator_download_url: "https://downloads.typesafe.com/typesafe-activator/{{ ac
 activator_download_filename: "typesafe-activator-{{ activator_current_version }}-minimal.zip"
 activator_extracted_directory_name: "activator-{{ activator_current_version }}-minimal"
 
-atlassian_bamboo_current_version: '5.12.3.1'
+atlassian_bamboo_current_version: '5.13.1'
 atlassian_bamboo_download_url: 'https://www.atlassian.com/software/bamboo/downloads/binary'
 atlassian_bamboo_download_filename: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}.tar.gz"
 atlassian_bamboo_extracted_dir_name: "atlassian-bamboo-{{ atlassian_bamboo_current_version }}"
